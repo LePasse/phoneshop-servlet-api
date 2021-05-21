@@ -18,20 +18,16 @@ public class ArrayListProductDao implements ProductDao {
 
     public ArrayListProductDao(){
         this.products = new ArrayList<>();
-        getSampleProducts();
         maxId = 0;
+
+        getSampleProducts();
     }
 
     @Override
-    public Optional<Product> getProduct(Long id) {
-        locker.writeLock().lock();
-        try {
-            return products.stream()
-                    .filter(product -> id.equals(product.getId()))
-                    .findAny();
-        } finally {
-            locker.writeLock().unlock();
-        }
+    public synchronized Optional<Product> getProduct(Long id) {
+        return products.stream()
+                .filter(product -> id.equals(product.getId()))
+                .findAny();
     }
 
     @Override
@@ -74,9 +70,7 @@ public class ArrayListProductDao implements ProductDao {
         locker.readLock().lock();
         //locker.writeLock().lock();
         try {
-            locker.readLock().unlock();
             Optional<Product> product = getProduct(id);
-            locker.readLock().lock();
             product.ifPresent(value -> products.remove(value));
         } finally {
             locker.readLock().unlock();
@@ -100,5 +94,9 @@ public class ArrayListProductDao implements ProductDao {
         save(new Product("simc56", "Siemens C56", new BigDecimal(70), usd, 20, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20C56.jpg"));
         save(new Product("simc61", "Siemens C61", new BigDecimal(80), usd, 30, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20C61.jpg"));
         save(new Product("simsxg75", "Siemens SXG75", new BigDecimal(150), usd, 40, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20SXG75.jpg"));
+    }
+
+    public long getMaxId(){
+        return this.maxId;
     }
 }
