@@ -13,7 +13,8 @@ public class ArrayListProductDao implements ProductDao {
     private List<Product> products;
     private long maxId;
 
-    ArrayListProductDao(){
+    public ArrayListProductDao(){
+        this.products = new ArrayList<>();
         getSampleProducts();
         maxId = 0;
     }
@@ -23,7 +24,6 @@ public class ArrayListProductDao implements ProductDao {
         return products.stream()
                 .filter(p -> id.equals(p.getId()))
                 .findAny();
-
     }
 
     @Override
@@ -33,12 +33,16 @@ public class ArrayListProductDao implements ProductDao {
 
     @Override
     public void save(Product product) {
-        Optional<Product> productCopy = getProduct(product.getId());
-        if (productCopy.isPresent()) {
-            products.remove(productCopy.get());
-        }
-        else {
+        if (product.getId() == null) {
             product.setId(maxId++);
+        } else {//check for id duplication
+            Optional<Product> productCopy = getProduct(product.getId());
+            if (productCopy.isPresent()) {
+                products.remove(productCopy.get());
+            }
+            else {
+                product.setId(maxId++);
+            }
         }
         products.add(product);
     }
@@ -50,7 +54,7 @@ public class ArrayListProductDao implements ProductDao {
         product.ifPresent(value -> products.remove(value));
     }
 
-    private void getSampleProducts(){
+    public void getSampleProducts(){
         Currency usd = Currency.getInstance("USD");
         save(new Product("sgs", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
         save(new Product("sgs2", "Samsung Galaxy S II", new BigDecimal(200), usd, 0, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20II.jpg"));
