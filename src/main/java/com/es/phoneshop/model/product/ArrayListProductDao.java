@@ -49,16 +49,18 @@ public class ArrayListProductDao implements ProductDao {
         try {
             if (product.getId() == null) {
                 product.setId(maxId++);
+                products.add(product);
             } else {//check for id duplication
                 Optional<Product> productCopy = getProduct(product.getId());
                 if (productCopy.isPresent()) {
-                    products.remove(productCopy.get());
+                    int index = products.indexOf(productCopy.get());
+                    products.set(index, product);
                 }
                 else {
                     product.setId(maxId++);
+                    products.add(product);
                 }
             }
-            products.add(product);
         } finally {
             locker.readLock().unlock();
         }
