@@ -14,12 +14,11 @@ public class ArrayListProductDao implements ProductDao {
 
     private List<Product> products;
     private long maxId;
-    private static ReentrantReadWriteLock locker;
+    private static final ReentrantReadWriteLock locker = new ReentrantReadWriteLock(true);
 
     public ArrayListProductDao(){
         this.products = new ArrayList<>();
         getSampleProducts();
-        locker = new ReentrantReadWriteLock();
         maxId = 0;
     }
 
@@ -52,14 +51,14 @@ public class ArrayListProductDao implements ProductDao {
     public void save(Product product) {
         locker.readLock().lock();
         try {
-            if (product.getId() == null) { //id net == new object
+            if (product.getId() == null) {
                 product.setId(maxId++);
             } else {//check for id duplication
                 Optional<Product> productCopy = getProduct(product.getId());
-                if (productCopy.isPresent()) { // id est == check v spiske li
+                if (productCopy.isPresent()) {
                     products.remove(productCopy.get());
                 }
-                else { // id est i ne v spiske
+                else {
                     product.setId(maxId++);
                 }
             }
@@ -73,13 +72,15 @@ public class ArrayListProductDao implements ProductDao {
     @Override
     public void delete(Long id) {
         locker.readLock().lock();
-        locker.writeLock().lock();
+        //locker.writeLock().lock();
         try {
+            locker.readLock().unlock();
             Optional<Product> product = getProduct(id);
+            locker.readLock().lock();
             product.ifPresent(value -> products.remove(value));
         } finally {
             locker.readLock().unlock();
-            locker.writeLock().unlock();
+            //locker.writeLock().unlock();
         }
 
     }
