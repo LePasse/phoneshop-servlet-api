@@ -48,7 +48,7 @@ public class ArrayListProductDaoTest
     }
 
     @Test
-    public void testSaveSameProduct(){
+    public void testSaveExistingProduct(){
         Currency usd = Currency.getInstance("USD");
         Product product = new Product(22L, "save test", "Samsung Galaxy SS", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
         productDao.save(product);
@@ -58,9 +58,8 @@ public class ArrayListProductDaoTest
         assertEquals(copy.get().getCode(),"new test");
     }
 
-
     @Test
-    public void testPriceNullProduct() {
+    public void testFindPriceNullProduct() {
         Currency usd = Currency.getInstance("USD");
         List<Product> products = productDao.findProducts();
         int sizeBefore = products.size();
@@ -71,7 +70,7 @@ public class ArrayListProductDaoTest
     }
 
     @Test
-    public void testZeroStockProduct() {
+    public void testFindZeroStockProduct() {
         Currency usd = Currency.getInstance("USD");
         List<Product> products = productDao.findProducts();
         int sizeBefore = products.size();
@@ -80,4 +79,5 @@ public class ArrayListProductDaoTest
         int sizeAfter = products.size();
         assertEquals(sizeBefore, sizeAfter);
     }
+
 }
