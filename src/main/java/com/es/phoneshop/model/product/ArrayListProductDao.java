@@ -16,7 +16,7 @@ public class ArrayListProductDao implements ProductDao {
     private long maxId;
     private static final ReentrantReadWriteLock locker = new ReentrantReadWriteLock(true);
 
-    public ArrayListProductDao(){
+    public ArrayListProductDao() {
         this.products = new ArrayList<>();
         maxId = 0;
 
@@ -55,8 +55,7 @@ public class ArrayListProductDao implements ProductDao {
                 if (productCopy.isPresent()) {
                     int index = products.indexOf(productCopy.get());
                     products.set(index, product);
-                }
-                else {
+                } else {
                     product.setId(maxId++);
                     products.add(product);
                 }
@@ -79,7 +78,7 @@ public class ArrayListProductDao implements ProductDao {
 
     }
 
-    public void getSampleProducts(){
+    public void getSampleProducts() {
         Currency usd = Currency.getInstance("USD");
         save(new Product("sgs", "Samsung Galaxy S", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
         save(new Product("sgs2", "Samsung Galaxy S II", new BigDecimal(200), usd, 0, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S%20II.jpg"));
@@ -96,7 +95,7 @@ public class ArrayListProductDao implements ProductDao {
         save(new Product("simsxg75", "Siemens SXG75", new BigDecimal(150), usd, 40, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Siemens/Siemens%20SXG75.jpg"));
     }
 
-    public long getMaxId(){
+    public long getMaxId() {
         return this.maxId;
     }
 }

@@ -10,8 +10,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-public class ArrayListProductDaoTest
-{
+public class ArrayListProductDaoTest {
     private ProductDao productDao;
 
     @Before
@@ -25,13 +24,13 @@ public class ArrayListProductDaoTest
     }
 
     @Test
-    public void testGetProduct(){
+    public void testGetProduct() {
         Optional<Product> product = productDao.getProduct(1L);
         assertTrue(product.isPresent());
     }
 
     @Test
-    public void testDeleteProduct(){
+    public void testDeleteProduct() {
         Optional<Product> product = productDao.getProduct(2L);
         assertTrue(product.isPresent());
         productDao.delete(2L);
@@ -40,7 +39,7 @@ public class ArrayListProductDaoTest
     }
 
     @Test
-    public void testSaveProduct(){
+    public void testSaveProduct() {
         Currency usd = Currency.getInstance("USD");
         Product product = new Product("save test", "Samsung Galaxy SS", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
         productDao.save(product);
@@ -48,14 +47,14 @@ public class ArrayListProductDaoTest
     }
 
     @Test
-    public void testSaveExistingProduct(){
+    public void testSaveExistingProduct() {
         Currency usd = Currency.getInstance("USD");
         Product product = new Product(22L, "save test", "Samsung Galaxy SS", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
         productDao.save(product);
         product.setCode("new test");
         productDao.save(product);
-        Optional<Product> copy = productDao.getProduct((productDao.getMaxId()-1));
-        assertEquals(copy.get().getCode(),"new test");
+        Optional<Product> copy = productDao.getProduct((productDao.getMaxId() - 1));
+        assertEquals(copy.get().getCode(), "new test");
     }
 
     @Test
