@@ -50,7 +50,7 @@ public class ArrayListProductDao implements ProductDao {
             if (product.getId() == null) {
                 product.setId(maxId++);
                 products.add(product);
-            } else {//check for id duplication
+            } else {
                 Optional<Product> productCopy = getProduct(product.getId());
                 if (productCopy.isPresent()) {
                     int index = products.indexOf(productCopy.get());
@@ -70,13 +70,11 @@ public class ArrayListProductDao implements ProductDao {
     @Override
     public void delete(Long id) {
         locker.readLock().lock();
-        //locker.writeLock().lock();
         try {
             Optional<Product> product = getProduct(id);
             product.ifPresent(value -> products.remove(value));
         } finally {
             locker.readLock().unlock();
-            //locker.writeLock().unlock();
         }
 
     }
