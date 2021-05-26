@@ -1,12 +1,10 @@
 package com.es.phoneshop.model.product;
 
-import com.es.phoneshop.web.ProductListPageServlet;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ArrayListProductDao implements ProductDao {
 
