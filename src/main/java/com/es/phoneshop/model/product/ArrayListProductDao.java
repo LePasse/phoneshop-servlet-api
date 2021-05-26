@@ -32,18 +32,24 @@ public class ArrayListProductDao implements ProductDao {
     public List<Product> findProducts(String query) {
         locker.writeLock().lock();
         try {
-            List<Product> result = new ArrayList<>();
             if (query != null) {
                 String[] keys = query.split(" ");
+                HashMap<Product, Integer> frequency = new HashMap<>();
                 for (String key : keys) {
-                    List<Product> temp = products.stream()
-                            .filter(product -> product.getDescription().contains(key))
+                    products.stream()
+                            .filter(product -> product.getDescription().matches(".*\\b" + key + "\\b.*"))
                             .filter(product -> product.getPrice() != null)
                             .filter(product -> product.getStock() > 0)
-                            .collect(Collectors.toList());
-                    result = Stream.concat(result.stream(), temp.stream()).collect(Collectors.toList());
+                            .forEach(product -> {
+                                int count = frequency.getOrDefault(product, 0);
+                                frequency.put(product, count + 1);
+                            });
                 }
-                return new ArrayList<>(new HashSet<Product>(result));
+                return frequency.entrySet()
+                        .stream()
+                        .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toList());
             } else {
                 return products.stream()
                         .filter(product -> product.getPrice() != null)
@@ -77,7 +83,6 @@ public class ArrayListProductDao implements ProductDao {
             locker.readLock().unlock();
         }
     }
-
 
     @Override
     public void delete(Long id) {

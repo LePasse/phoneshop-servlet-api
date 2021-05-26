@@ -25,7 +25,8 @@ public class ArrayListProductDaoTest {
 
     @Test
     public void testFindProductWithQuery() {
-        assertEquals(3, productDao.findProducts("Samsung").size());
+        int size = productDao.findProducts("Samsung II").size();
+        assertEquals(3, size);
     }
 
     @Test
