@@ -10,7 +10,7 @@ public class ArrayListProductDao implements ProductDao {
     private static ProductDao instance;
 
     public static synchronized ProductDao getInstance() {
-        if (instance == null){
+        if (instance == null) {
             instance = new ArrayListProductDao();
         }
         return instance;
@@ -20,7 +20,7 @@ public class ArrayListProductDao implements ProductDao {
     private long maxId;
     private static final ReentrantReadWriteLock locker = new ReentrantReadWriteLock(true);
 
-   private ArrayListProductDao() {
+    private ArrayListProductDao() {
         this.products = new ArrayList<>();
         maxId = 0;
     }
@@ -61,11 +61,11 @@ public class ArrayListProductDao implements ProductDao {
                                 frequency.put(product, count + 1);
                             });
                 }
-                //clearFrequency(frequency, keys.length);
+                frequency.entrySet().removeIf(e -> (e.getValue() < keys.length));
                 return frequency
                         .entrySet()
                         .stream()
-                        .sorted((e1, e2) -> Double.compare(countPercentage(e2.getValue(), e2.getKey().getDescription()), countPercentage(e1.getValue(), e1.getKey().getDescription())))
+                        .sorted(Comparator.comparingInt(e -> e.getKey().getDescription().split(" ").length))
                         .map(Map.Entry::getKey)
                         .collect(Collectors.toList());
 
