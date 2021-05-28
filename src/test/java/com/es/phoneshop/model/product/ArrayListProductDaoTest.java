@@ -20,12 +20,12 @@ public class ArrayListProductDaoTest {
 
     @Test
     public void testFindProductsNoResults() {
-        assertFalse(productDao.findProducts(null).isEmpty());
+        assertFalse(productDao.findProducts(null, null, null).isEmpty());
     }
 
     @Test
     public void testFindProductWithQuery() {
-        int size = productDao.findProducts("Samsung II").size();
+        int size = productDao.findProducts("Samsung",SortField.price, SortOrder.desc).size();
         assertEquals(3, size);
     }
 
@@ -66,10 +66,10 @@ public class ArrayListProductDaoTest {
     @Test
     public void testFindPriceNullProduct() {
         Currency usd = Currency.getInstance("USD");
-        List<Product> products = productDao.findProducts(null);
+        List<Product> products = productDao.findProducts(null, null, null);
         int sizeBefore = products.size();
         productDao.save(new Product("save test", "Samsung Galaxy SS", null, usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
-        products = productDao.findProducts(null);
+        products = productDao.findProducts(null, null, null);
         int sizeAfter = products.size();
         assertEquals(sizeBefore, sizeAfter);
     }
@@ -77,10 +77,10 @@ public class ArrayListProductDaoTest {
     @Test
     public void testFindZeroStockProduct() {
         Currency usd = Currency.getInstance("USD");
-        List<Product> products = productDao.findProducts(null);
+        List<Product> products = productDao.findProducts(null, null, null);
         int sizeBefore = products.size();
         productDao.save(new Product("save test", "Samsung Galaxy SS", new BigDecimal(100), usd, 0, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
-        products = productDao.findProducts(null);
+        products = productDao.findProducts(null, null, null);
         int sizeAfter = products.size();
         assertEquals(sizeBefore, sizeAfter);
     }
