@@ -39,7 +39,9 @@
             </a>
         </td>
         <td class="price">
-          <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
+            <a <a href='#' onclick='javascript:window.open("${pageContext.servletContext.contextPath}/priceHistory/${product.id}", "_blank", "scrollbars=1,resizable=1,height=300,width=450");' title='Pop Up'>
+                <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
+            </a>
         </td>
       </tr>
     </c:forEach>
