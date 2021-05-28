@@ -6,13 +6,13 @@ import java.util.HashMap;
 public class PriceHistory {
     private HashMap<Date, String> history;
 
-    public PriceHistory(Date date, String price){
+    public PriceHistory(Date date, String price) {
         this.history = new HashMap<>();
         add(date, price);
     }
 
-    public void add(Date date, String price){
-        this.history.put(date,price);
+    public void add(Date date, String price) {
+        this.history.put(date, price);
     }
 
     public HashMap<Date, String> get() {
