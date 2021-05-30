@@ -87,13 +87,13 @@ public class ArrayListProductDao implements ProductDao {
             List<Product> result = findByQuery(query);
             if (sortField != null || sortOrder != null) {
                 Comparator<Product> comparator = Comparator.comparing(product -> {
-                    if (SortField.price == sortField) {
+                    if (SortField.PRICE == sortField) {
                         return (Comparable) product.getPrice();
                     } else {
                         return (Comparable) product.getDescription();
                     }
                 });
-                comparator = SortOrder.desc == sortOrder ? comparator.reversed() : comparator;
+                comparator = SortOrder.DESC == sortOrder ? comparator.reversed() : comparator;
                 return result.stream()
                         .filter(product -> product.getPrice() != null)
                         .filter(product -> product.getStock() > 0)
