@@ -4,6 +4,7 @@ package com.es.phoneshop.model.product;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 public class ArrayListProductDao implements ProductDao {
@@ -32,41 +33,20 @@ public class ArrayListProductDao implements ProductDao {
                 .findAny();
     }
 
-    private double countPercentage(int count, String description) {
-        return (double) count / description.split(" ").length;
-    }
-
-    private synchronized HashMap<Product, Integer> clearFrequency(HashMap<Product, Integer> frequency, int count) {
-        frequency.forEach((k, v) -> {
-            if (v < count) {
-                frequency.remove(k);
-            }
-        });
-        return frequency;
-    }
-
-    private List<Product> findByQuery(String query) {
+    private List<Product> findProducts(String query) {
         locker.writeLock().lock();
         try {
             if (query != null) {
-                String[] keys = query.split(" ");
-                HashMap<Product, Integer> frequency = new HashMap<>();
-                for (String key : keys) {
-                    products.stream()
-                            .filter(product -> product.getDescription().matches(".*\\b" + key + "\\b.*"))
-                            .filter(product -> product.getPrice() != null)
-                            .filter(product -> product.getStock() > 0)
-                            .forEach(product -> {
-                                int count = frequency.getOrDefault(product, 0);
-                                frequency.put(product, count + 1);
-                            });
-                }
-                frequency.entrySet().removeIf(e -> (e.getValue() < keys.length));
-                return frequency
-                        .entrySet()
-                        .stream()
-                        .sorted(Comparator.comparingInt(e -> e.getKey().getDescription().split(" ").length))
-                        .map(Map.Entry::getKey)
+                String[] keywords = query.toLowerCase().split(" ");
+                ToIntFunction<Product> getNumberOfMatches = product -> (int) Arrays.stream(keywords)
+                        .filter(product.getDescription().toLowerCase()::contains)
+                        .count();
+                int keywordsCount = keywords.length;
+                return products.stream()
+                        .filter(product -> product.getPrice() != null)
+                        .filter(product -> product.getStock() > 0)
+                        .filter(product -> (keywordsCount == getNumberOfMatches.applyAsInt(product)))
+                        .sorted(Comparator.comparingInt(getNumberOfMatches))
                         .collect(Collectors.toList());
 
             } else {
@@ -84,27 +64,21 @@ public class ArrayListProductDao implements ProductDao {
     public List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
         locker.writeLock().lock();
         try {
-            List<Product> result = findByQuery(query);
-            if (sortField != null || sortOrder != null) {
-                Comparator<Product> comparator = Comparator.comparing(product -> {
-                    if (SortField.PRICE == sortField) {
-                        return (Comparable) product.getPrice();
-                    } else {
-                        return (Comparable) product.getDescription();
-                    }
-                });
-                comparator = SortOrder.DESC == sortOrder ? comparator.reversed() : comparator;
-                return result.stream()
-                        .filter(product -> product.getPrice() != null)
-                        .filter(product -> product.getStock() > 0)
-                        .sorted(comparator)
-                        .collect(Collectors.toList());
-            } else {
-                return result.stream()
-                        .filter(product -> product.getPrice() != null)
-                        .filter(product -> product.getStock() > 0)
-                        .collect(Collectors.toList());
+            List<Product> result = findProducts(query);
+            if (sortField == null) {
+                return result;
             }
+            Comparator<Product> comparator = Comparator.comparing(product -> {
+                if (SortField.PRICE == sortField) {
+                    return (Comparable) product.getPrice();
+                } else {
+                    return (Comparable) product.getDescription();
+                }
+            });
+            comparator = SortOrder.DESC == sortOrder ? comparator.reversed() : comparator;
+            return result.stream()
+                    .sorted(comparator)
+                    .collect(Collectors.toList());
 
         } finally {
             locker.writeLock().unlock();
