@@ -8,12 +8,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
+import java.util.Optional;
 
-public class ProductListPageServlet extends HttpServlet {
+public class ProductDetailPageServlet extends HttpServlet {
     private ProductDao productDao;
 
     @Override
@@ -24,11 +21,14 @@ public class ProductListPageServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String query = request.getParameter("query");
-        String sortField = request.getParameter("sort");
-        String sortOrder = request.getParameter("order");
-        request.setAttribute("products", productDao.findProducts(query, sortField != null ? SortField.valueOf(sortField) : null, sortOrder != null ? SortOrder.valueOf(sortOrder) : null));
-        request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
+        String productId = request.getPathInfo();
+        Optional<Product> product = productDao.getProduct(Long.valueOf(productId.substring(1)));
+        if (product.isPresent()) {
+            request.setAttribute("product", product.get());
+            request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
+        } else {
+            request.setAttribute("code", productId.substring(1));
+            request.getRequestDispatcher("/WEB-INF/pages/errorProductNotFound.jsp").forward(request, response);
+        }
     }
-
 }

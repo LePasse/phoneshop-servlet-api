@@ -17,8 +17,9 @@ public class Product {
     private Currency currency;
     private int stock;
     private String imageUrl;
+    private PriceHistory history;
 
-    public Product(Long id, String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
+    public Product(Long id, String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl, PriceHistory history) {
         this.id = id;
         this.code = code;
         this.description = description;
@@ -26,15 +27,17 @@ public class Product {
         this.currency = currency;
         this.stock = stock;
         this.imageUrl = imageUrl;
+        this.history = history;
     }
 
-    public Product(String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl) {
+    public Product(String code, String description, BigDecimal price, Currency currency, int stock, String imageUrl, PriceHistory history) {
         this.code = code;
         this.description = description;
         this.price = price;
         this.currency = currency;
         this.stock = stock;
         this.imageUrl = imageUrl;
+        this.history = history;
     }
 
     public Long getId() {
@@ -91,5 +94,13 @@ public class Product {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public void setHistory(PriceHistory history) {
+        this.history = history;
+    }
+
+    public PriceHistory getHistory() {
+        return history;
     }
 }

@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Currency;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,12 +16,18 @@ public class ArrayListProductDaoTest {
 
     @Before
     public void setup() {
-        productDao = new ArrayListProductDao();
+        productDao = ArrayListProductDao.getInstance();
     }
 
     @Test
     public void testFindProductsNoResults() {
-        assertFalse(productDao.findProducts().isEmpty());
+        assertFalse(productDao.findProducts(null, null, null).isEmpty());
+    }
+
+    @Test
+    public void testFindProductWithQuery() {
+        int size = productDao.findProducts("Samsung",SortField.PRICE, SortOrder.DESC).size();
+        assertNotEquals(0, size);
     }
 
     @Test
@@ -41,7 +48,7 @@ public class ArrayListProductDaoTest {
     @Test
     public void testSaveProduct() {
         Currency usd = Currency.getInstance("USD");
-        Product product = new Product("save test", "Samsung Galaxy SS", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        Product product = new Product("save test", "Samsung Galaxy SS", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg", new PriceHistory(new Date(2021, 2, 21), "100$"));
         productDao.save(product);
         assertTrue(productDao.getProduct(product.getId()).isPresent());
     }
@@ -49,7 +56,7 @@ public class ArrayListProductDaoTest {
     @Test
     public void testSaveExistingProduct() {
         Currency usd = Currency.getInstance("USD");
-        Product product = new Product(22L, "save test", "Samsung Galaxy SS", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg");
+        Product product = new Product(22L, "save test", "Samsung Galaxy SS", new BigDecimal(100), usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg", new PriceHistory(new Date(2021, 2, 21), "100$"));
         productDao.save(product);
         product.setCode("new test");
         productDao.save(product);
@@ -60,10 +67,10 @@ public class ArrayListProductDaoTest {
     @Test
     public void testFindPriceNullProduct() {
         Currency usd = Currency.getInstance("USD");
-        List<Product> products = productDao.findProducts();
+        List<Product> products = productDao.findProducts(null, null, null);
         int sizeBefore = products.size();
-        productDao.save(new Product("save test", "Samsung Galaxy SS", null, usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
-        products = productDao.findProducts();
+        productDao.save(new Product("save test", "Samsung Galaxy SS", null, usd, 100, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg", new PriceHistory(new Date(2021, 2, 21), "100$")));
+        products = productDao.findProducts(null, null, null);
         int sizeAfter = products.size();
         assertEquals(sizeBefore, sizeAfter);
     }
@@ -71,10 +78,10 @@ public class ArrayListProductDaoTest {
     @Test
     public void testFindZeroStockProduct() {
         Currency usd = Currency.getInstance("USD");
-        List<Product> products = productDao.findProducts();
+        List<Product> products = productDao.findProducts(null, null, null);
         int sizeBefore = products.size();
-        productDao.save(new Product("save test", "Samsung Galaxy SS", new BigDecimal(100), usd, 0, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg"));
-        products = productDao.findProducts();
+        productDao.save(new Product("save test", "Samsung Galaxy SS", new BigDecimal(100), usd, 0, "https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/manufacturer/Samsung/Samsung%20Galaxy%20S.jpg", new PriceHistory(new Date(2021, 2, 21), "100$")));
+        products = productDao.findProducts(null, null, null);
         int sizeAfter = products.size();
         assertEquals(sizeBefore, sizeAfter);
     }
