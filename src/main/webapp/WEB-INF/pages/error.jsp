@@ -5,7 +5,7 @@
 
 <tags:master pageTitle="Product not found">
     <h1>
-        Oops :(
+        404 Oops :(
     </h1>
   <p>
     Page not found
