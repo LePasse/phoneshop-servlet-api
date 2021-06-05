@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Optional;
+import java.util.Queue;
 
 import static com.es.phoneshop.web.tools.RequestTools.parseIntegerUsingLocale;
 
@@ -21,32 +22,26 @@ public class ProductDetailPageServlet extends HttpServlet {
 
     private ProductDao productDao;
     private CartService cartService;
+    private RecentlyViewed recentlyViewed;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         productDao = ArrayListProductDao.getInstance();
         cartService = DefaultCartService.getInstance();
+        recentlyViewed = RecentlyViewed.getInstance();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {
-            request.setAttribute("product", productDao.getProduct(parseProductID(request)));
-        } catch (IllegalArgumentException e) {
-            response.sendError(404);
-            return;
-        }
-
-        //if (sessionHasAttributes(request)) {
-        //    setRequestAttributes(request);
-        //}
-
         Long productID = parseProductID(request);
         Optional<Product> product = productDao.getProduct(productID);
         if (product.isPresent()) {
+            Queue<Product> queue = recentlyViewed.getQueue(request);
+            recentlyViewed.add(queue, product.get());
             request.setAttribute("product", product.get());
             request.setAttribute("cart", cartService.getCart(request));
+            request.setAttribute("recentlyViewed", recentlyViewed.getQueue(request));
             request.getRequestDispatcher("/WEB-INF/pages/product.jsp").forward(request, response);
         } else {
             request.setAttribute("message", "Product " + productID + " not found");

@@ -46,4 +46,9 @@
       </tr>
     </c:forEach>
   </table>
+
+    <footer>
+        <jsp:include page="footer.jsp"/>
+    </footer>
+
 </tags:master>
