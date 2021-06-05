@@ -27,7 +27,12 @@ public class DefaultCartService implements CartService {
     }
 
     @Override
-    public Cart getCart() {
+    public synchronized Cart getCart(HttpServletRequest request) {
+        Cart cart = (Cart) request.getSession().getAttribute(CART_SESSION_ATTRIBUTE);
+        if (cart == null) {
+            cart = new Cart();
+            request.getSession().setAttribute(CART_SESSION_ATTRIBUTE, cart);
+        }
         return cart;
     }
 
