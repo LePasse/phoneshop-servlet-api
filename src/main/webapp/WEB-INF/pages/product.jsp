@@ -38,7 +38,7 @@
         <tr>
              <td>Quantity</td>
              <td>
-                <input name="quantity" value="${not empty error? param.quantity : 1}">
+                <input name="quantity" class="detail" value="${not empty error? param.quantity : 1}">
                 <p class="error">
                     ${error}
                 </p>
@@ -60,6 +60,6 @@
     </table>
 
     <footer>
-            <jsp:include page="footer.jsp"/>
-        </footer>
+        <jsp:include page="footer.jsp"/>
+    </footer>
 </tags:master>

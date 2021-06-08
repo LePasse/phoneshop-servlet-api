@@ -34,9 +34,11 @@ public class RecentlyViewed {
     }
 
     public void add(Queue<Product> queue, Product product) {
-        if (queue.size() == 3) {
-            queue.remove();
+        if (!queue.contains(product)) {
+            if (queue.size() == 3) {
+                queue.remove();
+            }
+            queue.add(product);
         }
-        queue.add(product);
     }
 }
