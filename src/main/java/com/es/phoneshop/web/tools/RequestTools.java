@@ -8,6 +8,12 @@ import java.text.ParseException;
 public class RequestTools {
     public static Integer parseIntegerUsingLocale(HttpServletRequest request, String number) throws ParseException {
         NumberFormat decimalFormat = DecimalFormat.getInstance(request.getLocale());
-        return decimalFormat.parse(number).intValue();
+        int value = decimalFormat.parse(number).intValue();
+        if (value > 0) {
+            return value;
+        }
+        else {
+            throw new ParseException("value below 0", 0);
+        }
     }
 }
