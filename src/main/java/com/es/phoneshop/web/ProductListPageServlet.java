@@ -12,14 +12,17 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
+import java.util.Queue;
 
 public class ProductListPageServlet extends HttpServlet {
     private ProductDao productDao;
+    private RecentlyViewed recentlyViewed;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         productDao = ArrayListProductDao.getInstance();
+        recentlyViewed = RecentlyViewed.getInstance();
     }
 
     @Override
@@ -28,6 +31,7 @@ public class ProductListPageServlet extends HttpServlet {
         String sortField = request.getParameter("sort");
         String sortOrder = request.getParameter("order");
         request.setAttribute("products", productDao.findProducts(query, sortField != null ? SortField.valueOf(sortField) : null, sortOrder != null ? SortOrder.valueOf(sortOrder) : null));
+        request.setAttribute("recentlyViewed", recentlyViewed.getQueue(request));
         request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
     }
 

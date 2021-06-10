@@ -4,43 +4,62 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="product" type="com.es.phoneshop.model.product.Product" scope="request"/>
+<jsp:useBean id="cart" type="com.es.phoneshop.model.cart.Cart" scope="request"/>
 <tags:master pageTitle="Product List">
-  <p>
+  <h1>
     ${product.description}
-  </p>
-  <table>
-      <thead>
+  </h1>
+    <h3 class="success">
+        ${param.modalSuccess}
+    </h3>
+    <h3 class="error">
+        ${param.modalError}
+    </h3>
+  <form method="post">
+    <table>
         <tr>
-          <td>
-            Image
-          </td>
-          <td>
-            <img src="${product.imageUrl}">
-          </td>
+          <td>Image</td>
+          <td><img src="${product.imageUrl}"></td>
         </tr>
         <tr>
-            <td>
-                Code
-            </td>
-            <td class="detail">
-                ${product.code}
-            </td>
+            <td>Code</td>
+            <td class="detail">${product.code}</td>
         </tr>
         <tr>
-            <td>
-                Price
-            </td>
+            <td>Price </td>
             <td class="detail">
                 <fmt:formatNumber value="${product.price}" type="currency" currencySymbol="${product.currency.symbol}"/>
             </td>
         </tr>
         <tr>
-            <td>
-               Stock
-            </td>
-            <td class="detail">
-               ${product.stock}
-            </td>
+            <td>Stock</td>
+            <td class="detail">${product.stock}</td>
+        </tr>
+        <tr>
+             <td>Quantity</td>
+             <td>
+                <input name="quantity" class="detail" value="${not empty error? param.quantity : 1}">
+                <p class="error">
+                    ${error}
+                </p>
+             </td>
         </tr>
     </table>
+    <p>
+    <button>Add to cart</button>
+    </p>
+  </form>
+
+    <table>
+        <c:forEach var="item" items="${cart.items}">
+          <tr>
+            <td>${item.product.description}</td>
+            <td class="detail">${item.quantity}</td>
+          </tr>
+        </c:forEach>
+    </table>
+
+    <footer>
+        <jsp:include page="footer.jsp"/>
+    </footer>
 </tags:master>
