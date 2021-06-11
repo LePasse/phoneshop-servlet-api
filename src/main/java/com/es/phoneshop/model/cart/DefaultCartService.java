@@ -74,4 +74,19 @@ public class DefaultCartService implements CartService {
         recalculateCart(cart);
         return CartResult.SUCCESS;
     }
+
+    @Override
+    public void delete(Cart cart, Long productId) {
+        cart.getItems().removeIf(cartItem -> productId.equals(cartItem.getProduct().getId()));
+        recalculateCart(cart);
+    }
+
+    private void recalculateCart(Cart cart){
+        cart.setTotalQuantity(cart.getItems().stream()
+                .map(CartItem::getQuantity)
+                .collect(Collectors.summingInt(q -> q.intValue())));
+        cart.setTotalCost(cart.getItems().stream()
+                .map(cartItem -> cartItem.getProduct().getPrice().multiply(new BigDecimal(cartItem.getQuantity())))
+                .reduce(new BigDecimal(0), (a, b) -> a.add(b)));
+    }
 }
