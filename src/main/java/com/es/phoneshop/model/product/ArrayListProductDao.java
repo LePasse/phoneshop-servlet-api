@@ -1,7 +1,6 @@
 package com.es.phoneshop.model.product;
 
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.ToIntFunction;
@@ -17,7 +16,7 @@ public class ArrayListProductDao implements ProductDao {
         return instance;
     }
 
-    private List<Product> products;
+    private final List<Product> products;
     private long maxId;
     private static final ReentrantReadWriteLock locker = new ReentrantReadWriteLock(true);
 

@@ -6,7 +6,7 @@ import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -37,39 +37,41 @@ public class DefaultCartService implements CartService {
     }
 
     @Override
-    public synchronized AddResult add(Cart cart, Long productId, int quantity) {
+    public synchronized CartResult add(Cart cart, Long productId, int quantity) {
         Optional<Product> product = productDao.getProduct(productId);
-        if (!product.isPresent()) return AddResult.PRODUCT_NOT_FOUND;
+        if (!product.isPresent()) return CartResult.PRODUCT_NOT_FOUND;
         Optional<CartItem> item = cart.getItems()
                 .stream()
                 .filter(cartItem -> cartItem.getProduct().equals(product.get()))
                 .findAny();
         if (item.isPresent()) {
             if (quantity + item.get().getQuantity() > product.get().getStock()) {
-                return AddResult.NOT_ENOUGH_STOCK;
+                return CartResult.NOT_ENOUGH_STOCK;
             }
             item.get().setQuantity(quantity + item.get().getQuantity());
         } else {
             if (quantity > product.get().getStock()) {
-                return AddResult.NOT_ENOUGH_STOCK;
+                return CartResult.NOT_ENOUGH_STOCK;
             }
-            cart.getItems().add(new CartItem(product.get(),quantity));
+            cart.getItems().add(new CartItem(product.get(), quantity));
         }
-        return AddResult.SUCCESS;
+        recalculateCart(cart);
+        return CartResult.SUCCESS;
     }
 
     @Override
-    public synchronized AddResult update(Cart cart, Long productId, int quantity) {
+    public CartResult update(Cart cart, Long productId, int quantity) {
         Optional<Product> product = productDao.getProduct(productId);
-        if (!product.isPresent()) return AddResult.PRODUCT_NOT_FOUND;
+        if (!product.isPresent()) return CartResult.PRODUCT_NOT_FOUND;
         Optional<CartItem> item = cart.getItems()
-                        .stream()
-                        .filter(cartItem -> cartItem.getProduct().equals(product.get()))
-                        .findAny();
+                .stream()
+                .filter(cartItem -> cartItem.getProduct().equals(product.get()))
+                .findAny();
         if (quantity > product.get().getStock()) {
-            return AddResult.NOT_ENOUGH_STOCK;
+            return CartResult.NOT_ENOUGH_STOCK;
         }
         item.get().setQuantity(quantity);
-        return AddResult.SUCCESS;
+        recalculateCart(cart);
+        return CartResult.SUCCESS;
     }
 }

@@ -1,10 +1,12 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.cart.AddResult;
 import com.es.phoneshop.model.cart.Cart;
+import com.es.phoneshop.model.cart.CartResult;
 import com.es.phoneshop.model.cart.CartService;
 import com.es.phoneshop.model.cart.DefaultCartService;
-import com.es.phoneshop.model.product.*;
+import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.ProductDao;
+import com.es.phoneshop.model.product.RecentlyViewed;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -13,7 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.es.phoneshop.web.tools.RequestTools.parseIntegerUsingLocale;
 
@@ -51,7 +54,7 @@ public class CartPageServlet extends HttpServlet {
             try {
                 quantity = parseIntegerUsingLocale(request, quantities[i]);
                 Cart cart = cartService.getCart(request);
-                AddResult result = cartService.update(cart, productId, quantity);
+                CartResult result = cartService.update(cart, productId, quantity);
                 switch (result) {
                     case NOT_ENOUGH_STOCK:
                         errors.put(productId, "Not enough stock, max available " + productDao.getProduct(productId).get().getStock());
@@ -63,7 +66,7 @@ public class CartPageServlet extends HttpServlet {
                 errors.put(productId, "Quantity is not a valid number");
             }
         }
-        if (errors.isEmpty()){
+        if (errors.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/cart?modalSuccess=Cart updated successfully");
         } else {
             request.setAttribute("errors", errors);
