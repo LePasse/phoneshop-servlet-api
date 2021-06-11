@@ -33,6 +33,15 @@ td {
     color: green;
 }
 
+.quantity {
+    text-align: right;
+}
+
+.cartButton {
+    position: absolute;
+    right: 50;
+}
+
 img.product-tile {
   max-width: 64px;
 }
