@@ -53,7 +53,7 @@ public class ProductDetailPageServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String quantityString = request.getParameter("quantity");
-        Long productID = parseProductID(request);
+        Long productId = parseProductID(request);
         int quantity;
         try {
             quantity = parseIntegerUsingLocale(request, quantityString);
@@ -64,13 +64,17 @@ public class ProductDetailPageServlet extends HttpServlet {
             return;
         }
         Cart cart = cartService.getCart(request);
-        AddResult result = cartService.add(cart, productID, quantity);
+        AddResult result = cartService.add(cart, productId, quantity);
         switch (result) {
             case SUCCESS:
-                response.sendRedirect(request.getContextPath() + "/products/" + productID + "?modalSuccess=Added to cart successfully");
+                response.sendRedirect(request.getContextPath() + "/products/" + productId + "?modalSuccess=Added to cart successfully");
                 return;
             case NOT_ENOUGH_STOCK:
-                response.sendRedirect(request.getContextPath() + "/products/" + productID + "?modalError=Not enough stock");
+                response.sendRedirect(request.getContextPath() + "/products/" + productId + "?modalError=Not enough stock");
+                return;
+            case PRODUCT_NOT_FOUND:
+                request.setAttribute("message", "Product " + productId + " not found");
+                request.getRequestDispatcher("/WEB-INF/pages/errorProductNotFound.jsp").forward(request, response);
                 return;
         }
     }

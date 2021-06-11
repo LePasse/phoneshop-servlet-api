@@ -15,7 +15,7 @@
     <h3 class="error">
         ${param.modalError}
     </h3>
-  <form method="post">
+  <form method="post" action="${pageContext.servletContext.contextPath}/products/${product.id}">
     <table>
         <tr>
           <td>Image</td>
@@ -49,15 +49,6 @@
     <button>Add to cart</button>
     </p>
   </form>
-
-    <table>
-        <c:forEach var="item" items="${cart.items}">
-          <tr>
-            <td>${item.product.description}</td>
-            <td class="detail">${item.quantity}</td>
-          </tr>
-        </c:forEach>
-    </table>
 
     <footer>
         <jsp:include page="footer.jsp"/>
