@@ -13,9 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Queue;
+import java.util.*;
 
 import static com.es.phoneshop.web.tools.RequestTools.parseIntegerUsingLocale;
 
@@ -43,11 +41,33 @@ public class CartPageServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String[] productIds = request.getParameterValues("productId");
+        String[] quantities = request.getParameterValues("quantity");
 
-    }
-
-    private Long parseProductID(HttpServletRequest request) {
-        String productId = request.getPathInfo().substring(1);
-        return Long.valueOf(productId);
+        Map<Long, String> errors = new HashMap<>();
+        for (int i = 0; i < productIds.length; i++) {
+            Long productId = Long.valueOf(productIds[i]);
+            int quantity = 0;
+            try {
+                quantity = parseIntegerUsingLocale(request, quantities[i]);
+                Cart cart = cartService.getCart(request);
+                AddResult result = cartService.update(cart, productId, quantity);
+                switch (result) {
+                    case NOT_ENOUGH_STOCK:
+                        errors.put(productId, "Not enough stock, max available " + productDao.getProduct(productId).get().getStock());
+                        break;
+                    case PRODUCT_NOT_FOUND:
+                        errors.put(productId, "Product not found");
+                }
+            } catch (ParseException e) {
+                errors.put(productId, "Quantity is not a valid number");
+            }
+        }
+        if (errors.isEmpty()){
+            response.sendRedirect(request.getContextPath() + "/cart?modalSuccess=Cart updated successfully");
+        } else {
+            request.setAttribute("errors", errors);
+            doGet(request, response);
+        }
     }
 }

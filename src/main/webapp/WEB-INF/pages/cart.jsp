@@ -4,8 +4,22 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="cart" type="com.es.phoneshop.model.cart.Cart" scope="request"/>
+
 <tags:master pageTitle="Cart">
-    <form method="post">
+<p>
+    <c:if test="${not empty param.modalSuccess}">
+        <h3 class="success">
+            ${param.modalSuccess}
+        </h3>
+    </c:if>
+    <c:if test="${not empty errors}">
+        <h3 class="error">
+            There was some errors updating cart
+        </h3>
+    </c:if>
+</p>
+    <c:if test="${cart.getItems().size() > 0}">
+    <form method="post" action="${pageContext.servletContext.contextPath}/cart">
     <table>
         <thead>
           <tr>
@@ -21,7 +35,8 @@
             </td>
           </tr>
         </thead>
-        <c:forEach var="item" items="${cart.items}">
+
+        <c:forEach var="item" items="${cart.items}" varStatus="status">
                 <tr>
                       <td><img class="product-tile" src="${item.product.imageUrl}"></td>
                       <td>
@@ -36,7 +51,14 @@
                       </td>
                       <td class="detail">
                         <fmt:formatNumber value="${item.quantity}" var="quantity"/>
-                        <input name="quantity" value=${quantity} class="quantity"/>
+                        <c:set var="error" value="${errors[item.product.id]}" />
+                        <input name="quantity" value=${not empty error? paramValues['quantity'][status.index] : item.quantity} class="quantity"/>
+
+                        <c:if test="${not empty error}">
+                            <p class="error">
+                                ${error}
+                            </p>
+                        </c:if>
                         <input name="productId" type="hidden" value="${item.product.id}"/>
                       </td>
                 </tr>
@@ -46,6 +68,16 @@
         <button>Update cart</button>
     </p>
     </form>
+    </c:if>
+
+    <c:if test="${cart.getItems().size() == 0}">
+        <h1>
+            Your cart is empty.
+        </h1>
+        <a href="${pageContext.servletContext.contextPath}/products" />
+            -> to main page
+        </a>
+    </c:if>
 
     <footer>
         <jsp:include page="footer.jsp"/>

@@ -6,4 +6,6 @@ public interface CartService {
     Cart getCart(HttpServletRequest request);
 
     AddResult add(Cart cart, Long productId, int quantity);
+
+    AddResult update(Cart cart, Long productId, int quantity);
 }

@@ -39,23 +39,37 @@ public class DefaultCartService implements CartService {
     @Override
     public synchronized AddResult add(Cart cart, Long productId, int quantity) {
         Optional<Product> product = productDao.getProduct(productId);
-        CartItem item = new CartItem(product.get(), quantity);
-        List<Product> list = cart.getItems().stream()
-                .map(CartItem::getProduct)
-                .collect(Collectors.toList());
-        int indexOfCartItem = list.indexOf(product.get());
-        if (indexOfCartItem == -1) {
+        if (!product.isPresent()) return AddResult.PRODUCT_NOT_FOUND;
+        Optional<CartItem> item = cart.getItems()
+                .stream()
+                .filter(cartItem -> cartItem.getProduct().equals(product.get()))
+                .findAny();
+        if (item.isPresent()) {
+            if (quantity + item.get().getQuantity() > product.get().getStock()) {
+                return AddResult.NOT_ENOUGH_STOCK;
+            }
+            item.get().setQuantity(quantity + item.get().getQuantity());
+        } else {
             if (quantity > product.get().getStock()) {
                 return AddResult.NOT_ENOUGH_STOCK;
             }
-            cart.getItems().add(item);
-        } else {
-            if (quantity + cart.getItems().get(indexOfCartItem).getQuantity() > product.get().getStock()) {
-                return AddResult.NOT_ENOUGH_STOCK;
-            }
-            CartItem temp = cart.getItems().get(indexOfCartItem);
-            temp.setQuantity(quantity + temp.getQuantity());
+            cart.getItems().add(new CartItem(product.get(),quantity));
         }
+        return AddResult.SUCCESS;
+    }
+
+    @Override
+    public synchronized AddResult update(Cart cart, Long productId, int quantity) {
+        Optional<Product> product = productDao.getProduct(productId);
+        if (!product.isPresent()) return AddResult.PRODUCT_NOT_FOUND;
+        Optional<CartItem> item = cart.getItems()
+                        .stream()
+                        .filter(cartItem -> cartItem.getProduct().equals(product.get()))
+                        .findAny();
+        if (quantity > product.get().getStock()) {
+            return AddResult.NOT_ENOUGH_STOCK;
+        }
+        item.get().setQuantity(quantity);
         return AddResult.SUCCESS;
     }
 }
