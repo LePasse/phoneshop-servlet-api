@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class DefaultCartService implements CartService {
     public static final String CART_SESSION_ATTRIBUTE = DefaultCartService.class.getName() + ".cart";
-    private ProductDao productDao;
+    private final ProductDao productDao;
     private static DefaultCartService instance;
 
     public static synchronized DefaultCartService getInstance() {

@@ -1,10 +1,13 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.cart.AddResult;
 import com.es.phoneshop.model.cart.Cart;
+import com.es.phoneshop.model.cart.CartResult;
 import com.es.phoneshop.model.cart.CartService;
 import com.es.phoneshop.model.cart.DefaultCartService;
-import com.es.phoneshop.model.product.*;
+import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.product.ProductDao;
+import com.es.phoneshop.model.product.RecentlyViewed;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -13,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Queue;
 
@@ -64,7 +66,7 @@ public class ProductDetailPageServlet extends HttpServlet {
             return;
         }
         Cart cart = cartService.getCart(request);
-        AddResult result = cartService.add(cart, productId, quantity);
+        CartResult result = cartService.add(cart, productId, quantity);
         switch (result) {
             case SUCCESS:
                 response.sendRedirect(request.getContextPath() + "/products/" + productId + "?modalSuccess=Added to cart successfully");
