@@ -10,10 +10,9 @@ import javax.servlet.ServletContextListener;
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.Date;
-import java.util.HashMap;
 
 public class DemoDataServletContextListener implements ServletContextListener {
-    private ProductDao productDao;
+    private final ProductDao productDao;
 
     public DemoDataServletContextListener() {
         this.productDao = ArrayListProductDao.getInstance();

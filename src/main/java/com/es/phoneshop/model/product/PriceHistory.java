@@ -1,10 +1,11 @@
 package com.es.phoneshop.model.product;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 
-public class PriceHistory {
-    private HashMap<Date, String> history;
+public class PriceHistory implements Serializable {
+    private final HashMap<Date, String> history;
 
     public PriceHistory(Date date, String price) {
         this.history = new HashMap<>();

@@ -33,6 +33,19 @@ td {
     color: green;
 }
 
+.quantity {
+    text-align: right;
+}
+
+.minicart {
+    font: 400 40px/1.3 'Lobster Two', Helvetica, sans-serif;
+}
+
+.cartButton {
+    position: absolute;
+    right: 50;
+}
+
 img.product-tile {
   max-width: 64px;
 }

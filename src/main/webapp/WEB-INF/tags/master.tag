@@ -1,4 +1,5 @@
 <%@ tag trimDirectiveWhitespaces="true" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ attribute name="pageTitle" required="true" %>
 
 <html>
@@ -13,6 +14,11 @@
       <img src="${pageContext.servletContext.contextPath}/images/logo.svg"/>
       PhoneShop
     </a>
+
+    <a class="cartButton" href="${pageContext.servletContext.contextPath}/cart"/>
+        Cart
+    </a>
+    <jsp:include page="/cart/minicart"/>
   </header>
   <main>
     <jsp:doBody/>

@@ -1,11 +1,7 @@
 package com.es.phoneshop.model.product;
 
-import com.es.phoneshop.model.cart.Cart;
-import com.es.phoneshop.model.cart.DefaultCartService;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class RecentlyViewed {

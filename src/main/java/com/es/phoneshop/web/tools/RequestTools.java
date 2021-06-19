@@ -11,8 +11,7 @@ public class RequestTools {
         int value = decimalFormat.parse(number).intValue();
         if (value > 0) {
             return value;
-        }
-        else {
+        } else {
             throw new ParseException("value below 0", 0);
         }
     }

@@ -1,10 +1,13 @@
 package com.es.phoneshop.web;
 
-import com.es.phoneshop.model.cart.AddResult;
 import com.es.phoneshop.model.cart.Cart;
+import com.es.phoneshop.model.cart.CartResult;
 import com.es.phoneshop.model.cart.CartService;
 import com.es.phoneshop.model.cart.DefaultCartService;
-import com.es.phoneshop.model.product.*;
+import com.es.phoneshop.model.product.ArrayListProductDao;
+import com.es.phoneshop.model.product.Product;
+import com.es.phoneshop.model.product.ProductDao;
+import com.es.phoneshop.model.product.RecentlyViewed;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -13,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Queue;
 
@@ -53,30 +55,43 @@ public class ProductDetailPageServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String quantityString = request.getParameter("quantity");
-        Long productID = parseProductID(request);
-        int quantity;
-        try {
-            quantity = parseIntegerUsingLocale(request, quantityString);
-        } catch (ParseException e) {
-            request.setAttribute("error", "Quantity is not a valid number");
-            request.setAttribute("modalError", "Error adding to cart");
-            doGet(request, response);
-            return;
-        }
-        Cart cart = cartService.getCart(request);
-        AddResult result = cartService.add(cart, productID, quantity);
-        switch (result) {
-            case SUCCESS:
-                response.sendRedirect(request.getContextPath() + "/products/" + productID + "?modalSuccess=Added to cart successfully");
+        Long productId = parseProductID(request);
+        if (productId >= 0) {
+            int quantity;
+            try {
+                quantity = parseIntegerUsingLocale(request, quantityString);
+            } catch (ParseException e) {
+                request.setAttribute("error", "Quantity is not a valid number");
+                request.setAttribute("modalError", "Error adding to cart");
+                doGet(request, response);
                 return;
-            case NOT_ENOUGH_STOCK:
-                response.sendRedirect(request.getContextPath() + "/products/" + productID + "?modalError=Not enough stock");
-                return;
+            }
+            Cart cart = cartService.getCart(request);
+            CartResult result = cartService.add(cart, productId, quantity);
+            switch (result) {
+                case SUCCESS:
+                    response.sendRedirect(request.getContextPath() + "/products/" + productId + "?modalSuccess=Added to cart successfully");
+                    return;
+                case NOT_ENOUGH_STOCK:
+                    response.sendRedirect(request.getContextPath() + "/products/" + productId + "?modalError=Not enough stock");
+                    return;
+                case PRODUCT_NOT_FOUND:
+                    request.setAttribute("message", "Product " + productId + " not found");
+                    request.getRequestDispatcher("/WEB-INF/pages/errorProductNotFound.jsp").forward(request, response);
+                    return;
+            }
+        } else {
+            request.getRequestDispatcher("/WEB-INF/pages/errorProductNotFound.jsp").forward(request, response);
         }
+
     }
 
     private Long parseProductID(HttpServletRequest request) {
-        String productId = request.getPathInfo().substring(1);
-        return Long.valueOf(productId);
+        String productIdString = request.getPathInfo().substring(1);
+        try {
+            return Long.parseLong(productIdString);
+        } catch (NumberFormatException e) {
+            return (long) -1;
+        }
     }
 }

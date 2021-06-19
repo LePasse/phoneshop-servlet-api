@@ -1,5 +1,9 @@
 package com.es.phoneshop.web;
 
+import com.es.phoneshop.model.cart.Cart;
+import com.es.phoneshop.model.cart.CartResult;
+import com.es.phoneshop.model.cart.CartService;
+import com.es.phoneshop.model.cart.DefaultCartService;
 import com.es.phoneshop.model.product.*;
 
 import javax.servlet.ServletConfig;
@@ -8,11 +12,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Currency;
-import java.util.List;
-import java.util.Queue;
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.es.phoneshop.web.tools.RequestTools.parseIntegerUsingLocale;
 
 public class ProductListPageServlet extends HttpServlet {
     private ProductDao productDao;
@@ -34,5 +38,4 @@ public class ProductListPageServlet extends HttpServlet {
         request.setAttribute("recentlyViewed", recentlyViewed.getQueue(request));
         request.getRequestDispatcher("/WEB-INF/pages/productList.jsp").forward(request, response);
     }
-
 }
