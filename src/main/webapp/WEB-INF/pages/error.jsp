@@ -5,10 +5,8 @@
 
 <jsp:useBean id="message" type="String" scope="request"/>
 <tags:master pageTitle="Product not found">
-    <h1>
-           Oops :(
-       </h1>
-     <p>
-       ${message}
-     </p>
+
+    <h1>Oops :( </h1>
+    <p>${message} </p>
+
 </tags:master>

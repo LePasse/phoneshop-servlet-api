@@ -5,19 +5,14 @@
 
 <jsp:useBean id="product" type="com.es.phoneshop.model.product.Product" scope="request"/>
 <tags:master pageTitle="Price History">
-  <h1>
-    ${product.description}
-  </h1>
-  <table>
-       <c:forEach var="pair" items="${product.history.getHistory().entrySet()}">
-        <tr>
-          <td>
-              ${pair.getKey()}
-          </td>
-          <td class="price">
-             ${pair.getValue()}
-          </td>
-        </tr>
-      </c:forEach>
+
+    <h1>${product.description}</h1>
+    <table>
+        <c:forEach var="pair" items="${product.history.getHistory().entrySet()}">
+            <tr>
+                <td>${pair.getKey()}</td>
+                <td class="price">${pair.getValue()}</td>
+            </tr>
+        </c:forEach>
     </table>
 </tags:master>

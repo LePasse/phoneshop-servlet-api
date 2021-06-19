@@ -56,33 +56,42 @@ public class ProductDetailPageServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String quantityString = request.getParameter("quantity");
         Long productId = parseProductID(request);
-        int quantity;
-        try {
-            quantity = parseIntegerUsingLocale(request, quantityString);
-        } catch (ParseException e) {
-            request.setAttribute("error", "Quantity is not a valid number");
-            request.setAttribute("modalError", "Error adding to cart");
-            doGet(request, response);
-            return;
+        if (productId >= 0) {
+            int quantity;
+            try {
+                quantity = parseIntegerUsingLocale(request, quantityString);
+            } catch (ParseException e) {
+                request.setAttribute("error", "Quantity is not a valid number");
+                request.setAttribute("modalError", "Error adding to cart");
+                doGet(request, response);
+                return;
+            }
+            Cart cart = cartService.getCart(request);
+            CartResult result = cartService.add(cart, productId, quantity);
+            switch (result) {
+                case SUCCESS:
+                    response.sendRedirect(request.getContextPath() + "/products/" + productId + "?modalSuccess=Added to cart successfully");
+                    return;
+                case NOT_ENOUGH_STOCK:
+                    response.sendRedirect(request.getContextPath() + "/products/" + productId + "?modalError=Not enough stock");
+                    return;
+                case PRODUCT_NOT_FOUND:
+                    request.setAttribute("message", "Product " + productId + " not found");
+                    request.getRequestDispatcher("/WEB-INF/pages/errorProductNotFound.jsp").forward(request, response);
+                    return;
+            }
+        } else {
+            request.getRequestDispatcher("/WEB-INF/pages/errorProductNotFound.jsp").forward(request, response);
         }
-        Cart cart = cartService.getCart(request);
-        CartResult result = cartService.add(cart, productId, quantity);
-        switch (result) {
-            case SUCCESS:
-                response.sendRedirect(request.getContextPath() + "/products/" + productId + "?modalSuccess=Added to cart successfully");
-                return;
-            case NOT_ENOUGH_STOCK:
-                response.sendRedirect(request.getContextPath() + "/products/" + productId + "?modalError=Not enough stock");
-                return;
-            case PRODUCT_NOT_FOUND:
-                request.setAttribute("message", "Product " + productId + " not found");
-                request.getRequestDispatcher("/WEB-INF/pages/errorProductNotFound.jsp").forward(request, response);
-                return;
-        }
+
     }
 
     private Long parseProductID(HttpServletRequest request) {
-        String productId = request.getPathInfo().substring(1);
-        return Long.valueOf(productId);
+        String productIdString = request.getPathInfo().substring(1);
+        try {
+            return Long.parseLong(productIdString);
+        } catch (NumberFormatException e) {
+            return (long) -1;
+        }
     }
 }
