@@ -34,6 +34,10 @@ public class Cart implements Serializable {
         return totalCost;
     }
 
+    public void setItems(List<CartItem> items) {
+        this.items = items;
+    }
+
     @Override
     public String toString() {
         return "Cart[" + items + "]";
