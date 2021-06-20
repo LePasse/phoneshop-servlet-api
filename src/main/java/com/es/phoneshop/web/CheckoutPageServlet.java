@@ -57,7 +57,7 @@ public class CheckoutPageServlet extends HttpServlet {
         }
         String lastName = request.getParameter("lastName");
         if (!verifyName(lastName)) {
-            errors.put("lestName", "Last name must contain only letters.");
+            errors.put("lastName", "Last name must contain only letters.");
         }
         String phoneNumber = request.getParameter("phoneNumber");
         if (!verifyPhoneNumber(phoneNumber)) {
