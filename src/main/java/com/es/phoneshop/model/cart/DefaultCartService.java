@@ -1,6 +1,7 @@
 package com.es.phoneshop.model.cart;
 
 
+import com.es.phoneshop.model.order.Order;
 import com.es.phoneshop.model.product.ArrayListProductDao;
 import com.es.phoneshop.model.product.Product;
 import com.es.phoneshop.model.product.ProductDao;
@@ -81,7 +82,23 @@ public class DefaultCartService implements CartService {
         recalculateCart(cart);
     }
 
-    private void recalculateCart(Cart cart){
+    @Override
+    public void clearCart(Cart cart, Order order) {
+        for (CartItem item : order.getItems()) {
+            Optional<CartItem> cartItem = cart.getItems()
+                    .stream()
+                    .filter(streamItem -> streamItem.getProduct().equals(item.getProduct()))
+                    .findAny();
+            if (cartItem.isPresent()) {
+                cartItem.get().setQuantity(cartItem.get().getQuantity() - item.getQuantity());
+                if (cartItem.get().getQuantity() < 1) {
+                    cart.getItems().remove(cartItem.get());
+                }
+            }
+        }
+    }
+
+    private void recalculateCart(Cart cart) {
         cart.setTotalQuantity(cart.getItems().stream()
                 .map(CartItem::getQuantity)
                 .collect(Collectors.summingInt(q -> q.intValue())));

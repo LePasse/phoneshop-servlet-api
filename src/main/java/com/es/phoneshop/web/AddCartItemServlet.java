@@ -42,7 +42,6 @@ public class AddCartItemServlet extends HttpServlet {
             case PRODUCT_NOT_FOUND:
                 request.setAttribute("message", "Product " + productId + " not found");
                 request.getRequestDispatcher("/WEB-INF/pages/errorProductNotFound.jsp").forward(request, response);
-                return;
         }
     }
 

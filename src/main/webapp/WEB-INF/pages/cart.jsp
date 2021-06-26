@@ -69,12 +69,15 @@
                     <td>Total cost</td>
                     <td><fmt:formatNumber value="${cart.totalCost}" type="currency"
                                           currencySymbol="${cart.items[0].product.currency.symbol}"/></td>
-
                 </tr>
             </table>
             <p>
                 <button>Update cart</button>
+
             </p>
+        </form>
+        <form action="${pageContext.servletContext.contextPath}/checkout" method="get">
+            <button>Checkout</button>
         </form>
     </c:if>
 
@@ -82,12 +85,8 @@
     </form>
 
     <c:if test="${cart.getItems().size() == 0}">
-        <h1>
-            Your cart is empty.
-        </h1>
-        <a href="${pageContext.servletContext.contextPath}/products"/>
-        -> to main page
-        </a>
+        <h1>Your cart is empty.</h1>
+        <a href="${pageContext.servletContext.contextPath}/products"/>-> to main page</a>
     </c:if>
 
     <footer>

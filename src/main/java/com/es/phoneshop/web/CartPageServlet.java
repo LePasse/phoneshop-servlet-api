@@ -50,7 +50,7 @@ public class CartPageServlet extends HttpServlet {
         Map<Long, String> errors = new HashMap<>();
         for (int i = 0; i < productIds.length; i++) {
             Long productId = Long.valueOf(productIds[i]);
-            int quantity = 0;
+            int quantity;
             try {
                 quantity = parseIntegerUsingLocale(request, quantities[i]);
                 Cart cart = cartService.getCart(request);

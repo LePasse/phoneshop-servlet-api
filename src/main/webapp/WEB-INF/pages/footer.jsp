@@ -33,3 +33,4 @@
         </c:forEach>
     </table>
 </c:if>
+<p><h3>PhoneShop, Pavel Lebedzinski 2021</h3></p>

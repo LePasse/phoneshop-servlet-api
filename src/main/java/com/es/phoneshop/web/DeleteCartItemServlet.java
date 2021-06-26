@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.ParseException;
 
 public class DeleteCartItemServlet extends HttpServlet {
 
@@ -23,8 +22,7 @@ public class DeleteCartItemServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String productIdString = request.getPathInfo().substring(1);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long productId = parseProductID(request);
         if (productId >= 0) {
             Cart cart = cartService.getCart(request);
