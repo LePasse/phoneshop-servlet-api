@@ -32,7 +32,7 @@ public class ArrayListProductDao implements ProductDao {
                 .findAny();
     }
 
-    private List<Product> findProducts(String query) {
+    private List<Product> findProducts(String query, SearchType searchType) {
         locker.writeLock().lock();
         try {
             if (query != null) {
@@ -41,13 +41,21 @@ public class ArrayListProductDao implements ProductDao {
                         .filter(product.getDescription().toLowerCase()::contains)
                         .count();
                 int keywordsCount = keywords.length;
-                return products.stream()
-                        .filter(product -> product.getPrice() != null)
-                        .filter(product -> product.getStock() > 0)
-                        .filter(product -> (keywordsCount == getNumberOfMatches.applyAsInt(product)))
-                        .sorted(Comparator.comparingInt(getNumberOfMatches))
-                        .collect(Collectors.toList());
-
+                if (searchType.equals(SearchType.ALL_WORDS)) {
+                    return products.stream()
+                            .filter(product -> product.getPrice() != null)
+                            .filter(product -> product.getStock() > 0)
+                            .filter(product -> (keywordsCount == getNumberOfMatches.applyAsInt(product)))
+                            .sorted(Comparator.comparingInt(getNumberOfMatches))
+                            .collect(Collectors.toList());
+                } else {
+                    return products.stream()
+                            .filter(product -> product.getPrice() != null)
+                            .filter(product -> product.getStock() > 0)
+                            .filter(product -> (getNumberOfMatches.applyAsInt(product) > 0))
+                            .sorted(Comparator.comparingInt(getNumberOfMatches))
+                            .collect(Collectors.toList());
+                }
             } else {
                 return products.stream()
                         .filter(product -> product.getPrice() != null)
@@ -63,7 +71,7 @@ public class ArrayListProductDao implements ProductDao {
     public List<Product> findProducts(String query, SortField sortField, SortOrder sortOrder) {
         locker.writeLock().lock();
         try {
-            List<Product> result = findProducts(query);
+            List<Product> result = findProducts(query, SearchType.ALL_WORDS);
             if (sortField == null) {
                 return result;
             }
@@ -79,6 +87,23 @@ public class ArrayListProductDao implements ProductDao {
                     .sorted(comparator)
                     .collect(Collectors.toList());
 
+        } finally {
+            locker.writeLock().unlock();
+        }
+    }
+
+    @Override
+    public List<Product> searchProducts(String query, Long minPrice, Long maxPrice, SearchType searchType) {
+        locker.writeLock().lock();
+        try {
+            List<Product> result = findProducts(query, searchType);
+            if (minPrice != null) {
+                result = result.stream().filter(product -> product.getPrice().intValue() >= minPrice).collect(Collectors.toList());
+            }
+            if (maxPrice != null) {
+                result = result.stream().filter(product -> product.getPrice().intValue() <= maxPrice).collect(Collectors.toList());
+            }
+            return result;
         } finally {
             locker.writeLock().unlock();
         }

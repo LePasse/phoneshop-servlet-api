@@ -26,7 +26,7 @@ public class ArrayListProductDaoTest {
 
     @Test
     public void testFindProductWithQuery() {
-        int size = productDao.findProducts("Samsung",SortField.PRICE, SortOrder.DESC).size();
+        int size = productDao.findProducts("Samsung", SortField.PRICE, SortOrder.DESC).size();
         assertNotEquals(0, size);
     }
 
@@ -86,4 +86,33 @@ public class ArrayListProductDaoTest {
         assertEquals(sizeBefore, sizeAfter);
     }
 
+    @Test
+    public void searchByNegativeMinPrice() {
+        List<Product> products = productDao.searchProducts("", Long.valueOf(-100), null, SearchType.ANY_WORD);
+        assertFalse(products.isEmpty());
+    }
+
+    @Test
+    public void searchByNegativeMaxPrice() {
+        List<Product> products = productDao.searchProducts("", Long.valueOf(0), Long.valueOf(-100), SearchType.ANY_WORD);
+        assertTrue(products.isEmpty());
+    }
+
+    @Test
+    public void searchBYNullMinPrice() {
+        List<Product> products = productDao.searchProducts("", null, Long.valueOf(1000), SearchType.ANY_WORD);
+        assertFalse(products.isEmpty());
+    }
+
+    @Test
+    public void searchByNullMaxPrice() {
+        List<Product> products = productDao.searchProducts("", Long.valueOf(0), null, SearchType.ANY_WORD);
+        assertFalse(products.isEmpty());
+    }
+
+    @Test
+    public void searchByEmptyQuery() {
+        List<Product> products = productDao.searchProducts("", Long.valueOf(0), Long.valueOf(1000), SearchType.ANY_WORD);
+        assertFalse(products.isEmpty());
+    }
 }
